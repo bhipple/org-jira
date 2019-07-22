@@ -584,7 +584,7 @@ Entry to this mode calls the value of `org-jira-mode-hook'."
   "Translate PROJECT-KEY into filename."
   (-if-let (translation (cdr (assoc project-key org-jira-project-filename-alist)))
       (expand-file-name translation org-jira-working-dir)
-    (expand-file-name (concat project-key ".org") org-jira-working-dir)))
+    (expand-file-name "work.org" org-jira-working-dir)))
 
 (defun org-jira-get-project-lead (proj)
   (org-jira-find-value proj 'lead 'name))
@@ -1136,11 +1136,12 @@ ORG-JIRA-PROJ-KEY-OVERRIDE being set before and after running."
                        (org-insert-subheading t))
                      (org-jira-insert entry-heading "\n"))
 
-                   ;;  Insert 2 spaces of indentation so Jira markup won't cause org-markup
+                   ;; N.B. while it's true that Jira formatting can mess with
+                   ;; org formatting, this is less annoying than having
+                   ;; everything start with 2 spaces and busting paragraph
+                   ;; formatting.
                    (org-jira-insert
-                    (replace-regexp-in-string
-                     "^" "  "
-                     (format "%s" (slot-value Issue heading-entry)))))))
+                     (format "%s" (slot-value Issue heading-entry))))))
              '(description))
 
             (org-jira-update-comments-for-issue Issue)
